@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular17-management-application": {
+    "my-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/angular17-management-application",
+            "outputPath": "dist/my-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -27,7 +27,12 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "server": "src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -48,7 +53,13 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -57,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular17-management-application:build:production"
+              "buildTarget": "my-app:build:production"
             },
             "development": {
-              "buildTarget": "angular17-management-application:build:development"
+              "buildTarget": "my-app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -68,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "angular17-management-application:build"
+            "buildTarget": "my-app:build"
           }
         },
         "test": {
@@ -88,8 +99,28 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "my-app:build:production",
+              "serveTarget": "my-app:serve:production"
+            },
+            "development": {
+              "buildTarget": "my-app:build:development",
+              "serveTarget": "my-app:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
