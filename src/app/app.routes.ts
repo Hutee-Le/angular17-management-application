@@ -4,13 +4,13 @@ import { AdminLayoutComponent } from './shared/layout/admin-layout/admin-layout.
 import { UsersComponent } from './admin/users/users.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/doashboard', pathMatch: 'full' },
+    { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     {
         path: '',
         component: AdminLayoutComponent,
 
         children: [
-          { path: 'doashboard', component: DashboardComponent },
+          { path: 'dashboard', component: DashboardComponent },
           { path: 'users', component: UsersComponent}
         ]
       },
