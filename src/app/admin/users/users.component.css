@@ -1,0 +1,4 @@
+.hover-icon:hover {
+    color: var(--bs-secondary-light) !important;
+    transition: color 0.3s ease;
+  }

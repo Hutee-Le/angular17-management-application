@@ -7,22 +7,15 @@ import { Observable } from 'rxjs';
   selector: 'app-users',
   standalone: true,
   imports: [CommonModule],
-  // templateUrl: './users.component.html',
+  templateUrl: './users.component.html',
   styleUrl: './users.component.css',
-  template: `
-					<ul>
-					  <li *ngFor="let item of items | async">
-						{{ item.name }}
-					  </li>
-					</ul>
-				  `
 })
 export class UsersComponent {
   firestore: Firestore = inject(Firestore)
-  items: Observable<any[]>;
+  users: Observable<any[]>;
 
   constructor() {
-    const aCollection = collection(this.firestore, 'items')
-    this.items = collectionData(aCollection);
+    const aCollection = collection(this.firestore, 'users')
+    this.users = collectionData(aCollection);
   }
 }
