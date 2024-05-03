@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AdminLayoutComponent } from './shared/layout/admin-layout/admin-layout.component';
 import { UsersComponent } from './admin/users/users.component';
+import { ProductsComponent } from './admin/products/products.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -11,7 +12,8 @@ export const routes: Routes = [
 
         children: [
           { path: 'dashboard', component: DashboardComponent },
-          { path: 'users', component: UsersComponent}
+          { path: 'users', component: UsersComponent},
+          { path: 'products', component: ProductsComponent}
         ]
       },
 ];
