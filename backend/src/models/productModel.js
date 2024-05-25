@@ -5,12 +5,12 @@ class Product {
         this.description = description;
         this.gender = gender;
         this.image = image;
-        this.colors = [];
         this.price = price;
         this.category = category;
         this.subcategory = subcategory;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.colors = [];
     }
 }
 
