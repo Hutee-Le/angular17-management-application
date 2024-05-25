@@ -4,6 +4,7 @@ import cors from 'cors';
 import { urlencoded, json } from 'body-parser';
 
 import config from './config/config.js';
+import productRoute from './src/routes/productRoute.js'
 
 // create express app
 const app = express();
@@ -20,7 +21,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // enable CORS
 
-// define gET route
+// define get route
 app.get("/", (req, res) => {
     res.status(200).json({
         message: "Hello World",
@@ -28,8 +29,11 @@ app.get("/", (req, res) => {
     });
 });
 
+//routes
+app.use('/api/products', productRoute);
+
 // start server
 const PORT = config.port || 3000;
 app.listen(PORT, () => {
-  console.log(`Server  up and running in at http://localhost:${PORT}/`);
+  console.log(`Server up and running in at http://localhost:${PORT}/`);
 });
