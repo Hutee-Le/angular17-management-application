@@ -64,7 +64,6 @@ export const getProducts = async (req, res, next) => {
         for (const doc of productSnapshot.docs) {
             const data = doc.data();
 
-            // Initialize product with basic properties
             const product = new Product(
                 doc.id,
                 data.name,
@@ -80,7 +79,6 @@ export const getProducts = async (req, res, next) => {
             );
 
             if (data.colors) {
-                // Fetch colors for the product
                 for (const colorRef of data.colors) {
                     try {
                         const colorDoc = await getDoc(colorRef);
@@ -165,11 +163,42 @@ export const updateProduct = async (req, res, next) => {
 };
 
 export const deleteProduct = async (req, res, next) => {
+    const { id } = req.params;
+
     try {
-        const id = req.params.id;
-        await deleteDoc(doc(db, 'products', id));
-        res.status(200).send('product deleted successfully');
+        const productRef = doc(db, 'products', id);
+        const productDoc = await getDoc(productRef);
+
+        if (!productDoc.exists()) {
+            res.status(404).send('Product not found');
+            return;
+        }
+
+        const productData = productDoc.data();
+
+        if (productData.colors) {
+            for (const colorRef of productData.colors) {
+                const colorDoc = await getDoc(colorRef);
+
+                if (colorDoc.exists()) {
+                    const colorData = colorDoc.data();
+
+                    if (colorData.sizes) {
+                        for (const sizeRef of colorData.sizes) {
+                            await deleteDoc(sizeRef);
+                        }
+                    }
+
+                    await deleteDoc(colorRef);
+                }
+            }
+        }
+
+        await deleteDoc(productRef);
+
+        res.status(200).send('Product deleted successfully');
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error("Error deleting product: ", error);
+        res.status(500).send(error.message);
     }
-};
+}
