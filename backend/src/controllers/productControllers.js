@@ -87,7 +87,6 @@ export const getProducts = async (req, res, next) => {
                             const colorData = colorDoc.data();
 
                             const color = new Color(
-                                colorDoc.id,
                                 colorData.name,
                                 []
                             );
@@ -100,7 +99,6 @@ export const getProducts = async (req, res, next) => {
                                         if (sizeDoc.exists()) {
                                             const sizeData = sizeDoc.data();
                                             const size = new Size(
-                                                sizeDoc.id,
                                                 sizeData.size_name,
                                                 sizeData.quantity
                                             );
@@ -135,20 +133,70 @@ export const getProducts = async (req, res, next) => {
     }
 }
 
-export const getProduct = async (req, res, next) => {
+export const getProductById = async (req, res, next) => {
+    const { id } = req.params;
+
     try {
-        const id = req.params.id;
-        const product = doc(db, 'products', id);
-        const data = await getDoc(product);
-        if (data.exists()) {
-            res.status(200).send(data.data());
-        } else {
-            res.status(404).send('product not found');
+        // Lấy thông tin sản phẩm
+        const productRef = doc(db, 'products', id);
+        const productDoc = await getDoc(productRef);
+
+        if (!productDoc.exists()) {
+            res.status(404).send('Product not found');
+            return;
         }
+
+        const productData = productDoc.data();
+        const product = {
+            id: productDoc.id,
+            name: productData.name,
+            description: productData.description,
+            gender: productData.gender,
+            image: productData.image,
+            price: productData.price,
+            category: productData.category,
+            subcategory: productData.subcategory,
+            colors: []
+        };
+
+        if (productData.colors) {
+            for (const colorRef of productData.colors) {
+                const colorDoc = await getDoc(colorRef);
+
+                if (colorDoc.exists()) {
+                    const colorData = colorDoc.data();
+                    const color = {
+                        name: colorData.name,
+                        sizes: []
+                    };
+
+                    if (colorData.sizes) {
+                        for (const sizeRef of colorData.sizes) {
+                            const sizeDoc = await getDoc(sizeRef);
+
+                            if (sizeDoc.exists()) {
+                                const sizeData = sizeDoc.data();
+                                const size = {
+                                    size_name: sizeData.size_name,
+                                    quantity: sizeData.quantity
+                                };
+                                color.sizes.push(size);
+                            }
+                        }
+                    }
+
+                    product.colors.push(color);
+                }
+            }
+        }
+
+        res.status(200).send(product);
+
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error("Error getting product: ", error);
+        res.status(500).send(error.message);
     }
-};
+}
 
 export const updateProduct = async (req, res, next) => {
     try {

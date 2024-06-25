@@ -1,6 +1,5 @@
 class Color {
-    constructor(id, name, sizes) {
-        this.id = id;
+    constructor(name, sizes) {
         this.name = name;
         this.sizes = sizes;
     }

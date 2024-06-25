@@ -1,6 +1,5 @@
 class Size {
-    constructor(id, name, quantity) {
-        this.id = id;
+    constructor(name, quantity) {
         this.name = name;
         this.quantity = quantity;
     }
