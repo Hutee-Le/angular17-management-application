@@ -7,16 +7,51 @@ import Size from "../models/sizeModel";
 const db = getFirestore(firebase);
 
 export const createProduct = async (req, res, next) => {
+    const data = req.body;
+
     try {
-        const productId = 6;
-        console.log(data)
-        const productRef = doc(collection(db, 'products'), productId.toString());
-        await setDoc(productRef, { id: productId.toString(), ...data });
-        res.status(200).send('product created successfully');
+        const productRef = await addDoc(collection(db, 'products'), {
+            name: data.name,
+            description: data.description,
+            gender: data.gender,
+            image: data.image,
+            price: data.price,
+            category: data.category,
+            subcategory: data.subcategory,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        const colors = Array.isArray(data.colors) ? data.colors : [];
+
+        const colorRefs = [];
+        for (const color of colors) {
+            const colorRef = await addDoc(collection(db, 'colors'), { 
+                name: color.name 
+            });
+
+            const sizes = Array.isArray(color.sizes) ? color.sizes : [];
+            const sizeRefs = [];
+            for (const size of sizes) {
+                const sizeRef = await addDoc(collection(db, 'sizes'), { 
+                    size_name: size.size_name, 
+                    quantity: size.quantity 
+                });
+                sizeRefs.push(sizeRef);
+            }
+
+            await setDoc(colorRef, { sizes: sizeRefs }, { merge: true });
+            colorRefs.push(colorRef);
+        }
+
+        await setDoc(productRef, { colors: colorRefs }, { merge: true });
+
+        res.status(201).send({ id: productRef.id });
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error("Error creating product: ", error);
+        res.status(500).send(error.message);
     }
-};
+}
 
 export const getProducts = async (req, res, next) => {
     const productsCol = collection(db, 'products');
