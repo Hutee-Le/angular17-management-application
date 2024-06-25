@@ -1,7 +1,7 @@
 class Size {
-    constructor(id, size, quantity) {
+    constructor(id, name, quantity) {
         this.id = id;
-        this.size = size;
+        this.name = name;
         this.quantity = quantity;
     }
 }

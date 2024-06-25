@@ -1,8 +1,8 @@
 class Color {
-    constructor(id, color) {
+    constructor(id, name, sizes) {
         this.id = id;
-        this.color = color;
-        this.sizes = [];
+        this.name = name;
+        this.sizes = sizes;
     }
 }
 
