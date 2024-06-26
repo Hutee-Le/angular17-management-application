@@ -27,7 +27,8 @@ export const createProduct = async (req, res, next) => {
         const colorRefs = [];
         for (const color of colors) {
             const colorRef = await addDoc(collection(db, 'colors'), { 
-                name: color.name 
+                name: color.name,
+                product_id: productRef.id 
             });
 
             const sizes = Array.isArray(color.sizes) ? color.sizes : [];
@@ -35,7 +36,8 @@ export const createProduct = async (req, res, next) => {
             for (const size of sizes) {
                 const sizeRef = await addDoc(collection(db, 'sizes'), { 
                     size_name: size.size_name, 
-                    quantity: size.quantity 
+                    quantity: size.quantity,
+                    color_id: colorRef.id
                 });
                 sizeRefs.push(sizeRef);
             }
@@ -204,7 +206,6 @@ export const updateProduct = async (req, res, next) => {
 
     try {
         const productRef = doc(db, 'products', id);
-
         await updateDoc(productRef, {
             name: productData.name,
             description: productData.description,
@@ -216,56 +217,39 @@ export const updateProduct = async (req, res, next) => {
             updatedAt: new Date()
         });
 
-        if (productData.colors) {
-            const colorUpdates = [];
+        const colors = Array.isArray(productData.colors) ? productData.colors : [];
+        const colorRefs = [];
 
-            for (const colorData of productData.colors) {
-                let colorRef = colorData.ref ? doc(db, 'colors', colorData.ref.id) : null;
-
-                if (!colorRef) {
-                    const newColorRef = await addDoc(collection(db, 'colors'), {
-                        name: colorData.name
-                    });
-
-                    const sizeUpdates = [];
-                    for (const sizeData of colorData.sizes) {
-                        const newSizeRef = await addDoc(collection(db, 'sizes'), {
-                            size_name: sizeData.size_name,
-                            quantity: sizeData.quantity
-                        });
-                        sizeUpdates.push(newSizeRef);
-                    }
-
-                    await setDoc(newColorRef, { sizes: sizeUpdates }, { merge: true });
-                    colorRef = newColorRef;
-                } else {
-                    const sizeUpdates = [];
-                    for (const sizeData of colorData.sizes) {
-                        let sizeRef = sizeData.ref ? doc(db, 'sizes', sizeData.ref.id) : null;
-
-                        if (!sizeRef) {
-                            sizeRef = await addDoc(collection(db, 'sizes'), {
-                                size_name: sizeData.size_name,
-                                quantity: sizeData.quantity
-                            });
-                        } else {
-                            await updateDoc(sizeRef, {
-                                size_name: sizeData.size_name,
-                                quantity: sizeData.quantity
-                            });
-                        }
-
-                        sizeUpdates.push(sizeRef);
-                    }
-
-                    await setDoc(colorRef, { sizes: sizeUpdates }, { merge: true });
-                }
-
-                colorUpdates.push(colorRef);
+        for (const color of colors) {
+            let colorRef;
+            if (color.id) {
+                colorRef = doc(db, 'colors', color.id);
+                await updateDoc(colorRef, { name: color.name });
+            } else {
+                colorRef = await addDoc(collection(db, 'colors'), { name: color.name, product_id: id });
             }
 
-            await updateDoc(productRef, { colors: colorUpdates }, { merge: true });
+            const sizes = Array.isArray(color.sizes) ? color.sizes : [];
+            const sizeRefs = [];
+
+            for (const size of sizes) {
+                let sizeRef;
+                if (size.id) {
+                    // Nếu kích cỡ đã tồn tại, cập nhật nó
+                    sizeRef = doc(db, 'sizes', size.id);
+                    await updateDoc(sizeRef, { size_name: size.size_name, quantity: size.quantity });
+                } else {
+                    // Nếu kích cỡ mới, thêm mới nó
+                    sizeRef = await addDoc(collection(db, 'sizes'), { size_name: size.size_name, quantity: size.quantity, color_id: colorRef.id });
+                }
+                sizeRefs.push(sizeRef);
+            }
+
+            await setDoc(colorRef, { sizes: sizeRefs }, { merge: true });
+            colorRefs.push(colorRef);
         }
+
+        await setDoc(productRef, { colors: colorRefs }, { merge: true });
 
         res.status(200).send('Product updated successfully');
     } catch (error) {
@@ -273,6 +257,8 @@ export const updateProduct = async (req, res, next) => {
         res.status(500).send(error.message);
     }
 }
+
+
 
 export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
