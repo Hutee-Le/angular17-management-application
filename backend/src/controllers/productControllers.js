@@ -222,8 +222,11 @@ export const updateProduct = async (req, res, next) => {
 
         for (const color of colors) {
             let colorRef;
-            if (color.id) {
-                colorRef = doc(db, 'colors', color.id);
+            const colorQuery = query(collection(db, 'colors'), where('name', '==', color.name), where('product_id', '==', id));
+            const colorSnapshot = await getDocs(colorQuery);
+
+            if (!colorSnapshot.empty) {
+                colorRef = colorSnapshot.docs[0].ref;
                 await updateDoc(colorRef, { name: color.name });
             } else {
                 colorRef = await addDoc(collection(db, 'colors'), { name: color.name, product_id: id });
@@ -234,12 +237,13 @@ export const updateProduct = async (req, res, next) => {
 
             for (const size of sizes) {
                 let sizeRef;
-                if (size.id) {
-                    // Nếu kích cỡ đã tồn tại, cập nhật nó
-                    sizeRef = doc(db, 'sizes', size.id);
+                const sizeQuery = query(collection(db, 'sizes'), where('size_name', '==', size.size_name), where('color_id', '==', colorRef.id));
+                const sizeSnapshot = await getDocs(sizeQuery);
+
+                if (!sizeSnapshot.empty) {
+                    sizeRef = sizeSnapshot.docs[0].ref;
                     await updateDoc(sizeRef, { size_name: size.size_name, quantity: size.quantity });
                 } else {
-                    // Nếu kích cỡ mới, thêm mới nó
                     sizeRef = await addDoc(collection(db, 'sizes'), { size_name: size.size_name, quantity: size.quantity, color_id: colorRef.id });
                 }
                 sizeRefs.push(sizeRef);
@@ -257,8 +261,6 @@ export const updateProduct = async (req, res, next) => {
         res.status(500).send(error.message);
     }
 }
-
-
 
 export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
