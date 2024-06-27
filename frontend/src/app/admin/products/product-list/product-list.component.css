@@ -1,3 +1,18 @@
 .cursor-pointer {
     cursor: pointer;
   }
+
+.pagination{
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.loading-overlay {
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  z-index: 9999; 
+  border-radius: 10px;
+}

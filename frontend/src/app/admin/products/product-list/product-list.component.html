@@ -30,8 +30,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
+                <div class="table-responsive position-relative">
+                    <img *ngIf="isLoading" src="./assets/compiled/svg/oval.svg" class="loading-overlay" alt="Loading...">
+                    <table *ngIf="!isLoading" class="table table-hover">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -42,8 +43,9 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody *ngIf="products$ | async as products">
-                            <tr *ngFor="let product of products; let i = index">
+                        <tbody>
+                            <tr
+                                *ngFor="let product of products | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }; let i = index">
                                 <td>{{ i + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -72,6 +74,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination-controls class="pagination" (pageChange)="currentPage = $event"></pagination-controls>
                 </div>
             </div>
         </div>

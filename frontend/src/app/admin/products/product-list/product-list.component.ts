@@ -4,29 +4,44 @@ import { Product } from '../../../core/models/product';
 import { ProductsService } from '../../../core/services/products.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Observable, catchError, tap } from 'rxjs';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SpinnerComponent } from "../../../spinner/spinner.component";
 
 @Component({
-  selector: 'app-product-list',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.css'
+    selector: 'app-product-list',
+    standalone: true,
+    templateUrl: './product-list.component.html',
+    styleUrl: './product-list.component.css',
+    imports: [CommonModule, NgxPaginationModule, SpinnerComponent]
 })
 export class ProductListComponent implements OnInit {
-  firestore: Firestore = inject(Firestore)
-  products$: Observable<Product[]> = this.productService.getProducts().pipe(
-    tap(products => {
-      products.forEach(product => {
-        product.totalQuantity = this.calculateTotalQuantity(product);
-      });
-    })
-  );
+  firestore: Firestore = inject(Firestore);
+  products: Product[] = [];
   totalQuantity: number = 0;
+  currentPage: number = 1;  
+  itemsPerPage: number = 10;
+  isLoading: boolean = false;
+  
 
-  constructor(private productService: ProductsService, private router: Router) {}
+  constructor(private productService: ProductsService, private router: Router) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.getAll();
+  }
+
+  getAll(): void {
+    this.isLoading = true; 
+    this.productService.getProducts().subscribe(
+      (products) => {
+        this.products = products;
+        this.isLoading = false; 
+      },
+      (error) => {
+        console.error('Error fetching products:', error);
+        this.isLoading = false; 
+      }
+    );
+  }
 
   calculateTotalQuantity(product: Product): number {
     let totalQuantity = 0;
@@ -39,36 +54,18 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteProduct(id: string): void {
-    this.products$ = this.products$.pipe(
-      tap(products => {
-        const index = products.findIndex(product => product.id === id);
-        if (index > -1) {
-          products.splice(index, 1);
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      this.isLoading = true; 
+      this.productService.deleteProduct(id).subscribe(
+        () => {
+          console.log('Product deleted successfully');
+          this.getAll(); 
+        },
+        (error) => {
+          console.error('Error deleting product:', error);
+          this.isLoading = false; 
         }
-      })
-    );
-
-    this.productService.deleteProduct(id).pipe(
-      catchError(error => {
-        console.error('Error deleting product:', error);
-        this.getAll();
-        throw error;
-      })
-    ).subscribe(
-      () => {
-        console.log('Product deleted successfully');
-      }
-    );
-  }
-
-  getAll(): void {
-    this.products$ = this.productService.getProducts().pipe(
-      tap(products => {
-        products.forEach(product => {
-          product.totalQuantity = this.calculateTotalQuantity(product);
-        });
-      })
-    );
+      );
+    }
   }
 }
-

@@ -8,7 +8,7 @@ import { productDescription } from '../models/productDescription';
   providedIn: 'root'
 })
 export class ProductsService {
-  private apiUrl = 'http://localhost:5000/api/products/';
+  private apiUrl = 'http://localhost:5000/api/products';
 
   constructor(private http: HttpClient) { }
 
@@ -28,6 +28,6 @@ export class ProductsService {
 
   deleteProduct(id: string): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
-    return this.http.delete<any>(url);
+    return this.http.delete(url, { responseType: 'text' });
   }
 }
