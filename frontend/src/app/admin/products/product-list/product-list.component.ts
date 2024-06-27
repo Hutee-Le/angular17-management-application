@@ -73,4 +73,29 @@ export class ProductListComponent implements OnInit {
       );
     }
   }
+
+  calculateProductStatus(product: Product): string {
+    const totalQuantity = this.calculateTotalQuantity(product);
+    if (totalQuantity <= 0) {
+      return 'Out of Stock'; 
+    } else if (totalQuantity <= 10) {
+      return 'Running Out'; 
+    } else {
+      return 'In Stock'; 
+    }
+  }
+
+  getStatusBadgeClass(product: Product): string {
+    const status = this.calculateProductStatus(product);
+    switch (status) {
+      case 'Out of Stock':
+        return 'badge bg-danger';
+      case 'Running Out':
+        return 'badge bg-warning';
+      case 'In Stock':
+        return 'badge bg-success';
+      default:
+        return 'badge bg-secondary';
+    }
+  }
 }
