@@ -206,6 +206,7 @@ export const updateProduct = async (req, res, next) => {
 
     try {
         const productRef = doc(db, 'products', id);
+
         await updateDoc(productRef, {
             name: productData.name,
             description: productData.description,
@@ -222,35 +223,40 @@ export const updateProduct = async (req, res, next) => {
 
         for (const color of colors) {
             let colorRef;
-            const colorQuery = query(collection(db, 'colors'), where('name', '==', color.name), where('product_id', '==', id));
-            const colorSnapshot = await getDocs(colorQuery);
+            if (color.name && id) {
+                const colorQuery = query(collection(db, 'colors'), where('name', '==', color.name), where('product_id', '==', id));
+                const colorSnapshot = await getDocs(colorQuery);
 
-            if (!colorSnapshot.empty) {
-                colorRef = colorSnapshot.docs[0].ref;
-                await updateDoc(colorRef, { name: color.name });
-            } else {
-                colorRef = await addDoc(collection(db, 'colors'), { name: color.name, product_id: id });
-            }
-
-            const sizes = Array.isArray(color.sizes) ? color.sizes : [];
-            const sizeRefs = [];
-
-            for (const size of sizes) {
-                let sizeRef;
-                const sizeQuery = query(collection(db, 'sizes'), where('size_name', '==', size.size_name), where('color_id', '==', colorRef.id));
-                const sizeSnapshot = await getDocs(sizeQuery);
-
-                if (!sizeSnapshot.empty) {
-                    sizeRef = sizeSnapshot.docs[0].ref;
-                    await updateDoc(sizeRef, { size_name: size.size_name, quantity: size.quantity });
+                if (!colorSnapshot.empty) {
+                    colorRef = colorSnapshot.docs[0].ref;
+                    await updateDoc(colorRef, { name: color.name });
                 } else {
-                    sizeRef = await addDoc(collection(db, 'sizes'), { size_name: size.size_name, quantity: size.quantity, color_id: colorRef.id });
+                    colorRef = await addDoc(collection(db, 'colors'), { name: color.name, product_id: id });
                 }
-                sizeRefs.push(sizeRef);
-            }
 
-            await setDoc(colorRef, { sizes: sizeRefs }, { merge: true });
-            colorRefs.push(colorRef);
+                const sizes = Array.isArray(color.sizes) ? color.sizes : [];
+                const sizeRefs = [];
+
+                for (const size of sizes) {
+                    let sizeRef;
+                    if (size.name && colorRef.id) {
+                        const sizeQuery = query(collection(db, 'sizes'), where('size_name', '==', size.name), where('color_id', '==', colorRef.id));
+                        const sizeSnapshot = await getDocs(sizeQuery);
+
+                        console.log(!sizeSnapshot.empty)
+                        if (!sizeSnapshot.empty) {
+                            sizeRef = sizeSnapshot.docs[0].ref;
+                            await updateDoc(sizeRef, { size_name: size.name, quantity: size.quantity });
+                        } else {
+                            sizeRef = await addDoc(collection(db, 'sizes'), { size_name: size.name, quantity: size.quantity, color_id: colorRef.id });
+                        }
+                        sizeRefs.push(sizeRef);
+                    }
+                }
+
+                await setDoc(colorRef, { sizes: sizeRefs }, { merge: true });
+                colorRefs.push(colorRef);
+            }
         }
 
         await setDoc(productRef, { colors: colorRefs }, { merge: true });
@@ -261,7 +267,6 @@ export const updateProduct = async (req, res, next) => {
         res.status(500).send(error.message);
     }
 }
-
 export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
