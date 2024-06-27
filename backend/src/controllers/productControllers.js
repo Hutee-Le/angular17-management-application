@@ -266,6 +266,7 @@ export const updateProduct = async (req, res, next) => {
         res.status(500).send(error.message);
     }
 }
+
 export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
