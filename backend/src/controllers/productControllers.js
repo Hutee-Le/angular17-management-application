@@ -243,7 +243,6 @@ export const updateProduct = async (req, res, next) => {
                         const sizeQuery = query(collection(db, 'sizes'), where('size_name', '==', size.name), where('color_id', '==', colorRef.id));
                         const sizeSnapshot = await getDocs(sizeQuery);
 
-                        console.log(!sizeSnapshot.empty)
                         if (!sizeSnapshot.empty) {
                             sizeRef = sizeSnapshot.docs[0].ref;
                             await updateDoc(sizeRef, { size_name: size.name, quantity: size.quantity });
