@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { SpinnerComponent } from "../../../spinner/spinner.component";
 
+
 @Component({
     selector: 'app-product-list',
     standalone: true,
@@ -41,6 +42,10 @@ export class ProductListComponent implements OnInit {
         this.isLoading = false; 
       }
     );
+  }
+
+  goToProductDetail(productId: string): void {
+    this.router.navigate(['/products', productId]);
   }
 
   calculateTotalQuantity(product: Product): number {

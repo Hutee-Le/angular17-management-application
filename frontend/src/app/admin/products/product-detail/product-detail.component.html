@@ -1,0 +1,61 @@
+<div class="loading-container" *ngIf="loading">
+    <img src="./assets/compiled/svg/circles.svg" class="loading-spinner" alt="Loading...">
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <section class="section" *ngIf="product && !loading">
+                    <div class="product-detail card">
+                        <div class="card-body">
+                            <h1>{{ product.name }}</h1>
+                            <div class="product-image">
+                                <img [src]="product.image" alt="Product Image">
+                            </div>
+                            <div class="product-info">
+                                <p><strong>Price:</strong> {{ product.price }}</p>
+                                <p><strong>Total Quantity:</strong> {{ totalQuantity }}</p>
+                                <p><strong>Category:</strong> {{ product.category }}</p>
+                                <p><strong>Description:</strong> {{ product.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="error-message card-body" *ngIf="error">
+                    <p>Failed to load product details.</p>
+                    <p>{{ error }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card color-size-table" *ngIf="product && !loading">
+                <div class="card-body">
+                    <h2>Colors and Sizes</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let color of product.colors; let colorIndex = index">
+                                <tr *ngFor="let size of color.sizes; let first = first">
+                                    <td *ngIf="first" [attr.rowspan]="color.sizes.length">
+                                        {{ color.name }}
+                                    </td>
+                                    <td>{{ size.size_name }}</td>
+                                    <td>{{ size.quantity }}</td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

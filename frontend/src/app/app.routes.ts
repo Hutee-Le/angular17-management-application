@@ -3,6 +3,7 @@ import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AdminLayoutComponent } from './shared/layout/admin-layout/admin-layout.component';
 import { UsersComponent } from './admin/users/users.component';
 import { ProductListComponent } from './admin/products/product-list/product-list.component';
+import { ProductDetailComponent } from './admin/products/product-detail/product-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -12,7 +13,8 @@ export const routes: Routes = [
       children: [
           { path: 'dashboard', component: DashboardComponent },
           { path: 'users', component: UsersComponent },
-          { path: 'products', component: ProductListComponent }
+          { path: 'products', component: ProductListComponent },
+          { path: 'products/:id', component: ProductDetailComponent },
       ]
   },
 ];
