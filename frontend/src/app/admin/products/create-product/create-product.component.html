@@ -1,0 +1,107 @@
+<div class="container">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Product Information</h5>
+              <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter product name">
+                <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="invalid-feedback">
+                  Product Name is required.
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" formControlName="description" placeholder="Enter product description"></textarea>
+                <div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched" class="invalid-feedback">
+                  Description is required.
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <input type="text" class="form-control" id="gender" formControlName="gender" placeholder="Enter gender">
+                <div *ngIf="productForm.get('gender')?.dirty && productForm.get('gender')?.touched" class="invalid-feedback">
+                  Gender is required.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Product Details</h5>
+              <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" formControlName="price" placeholder="Enter price">
+                <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="invalid-feedback">
+                  Price must be a positive number.
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" class="form-control" id="category" formControlName="category" placeholder="Enter category">
+                <div *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched" class="invalid-feedback">
+                  Category is required.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div formArrayName="colors">
+        <div *ngFor="let color of colors.controls; let colorIndex = index" [formGroupName]="colorIndex">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Color {{ colorIndex + 1 }}</h5>
+              <div class="form-group">
+                <label for="colorName">Color Name</label>
+                <input type="text" class="form-control" id="colorName" formControlName="name" placeholder="Enter color name">
+                <div *ngIf="color.get('name')?.invalid && color.get('name')?.touched" class="invalid-feedback">
+                  Color Name is required.
+                </div>
+              </div>
+  
+              <div formArrayName="sizes">
+                <div *ngFor="let size of getSizes(colorIndex).controls; let sizeIndex = index" [formGroupName]="sizeIndex">
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <h5 class="card-title">Size {{ sizeIndex + 1 }}</h5>
+                      <div class="form-group">
+                        <label for="sizeName">Size Name</label>
+                        <input type="text" class="form-control" id="sizeName" formControlName="size_name" placeholder="Enter size name">
+                        <div *ngIf="size.get('size_name')?.invalid && size.get('size_name')?.touched" class="invalid-feedback">
+                          Size Name is required.
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" formControlName="quantity" placeholder="Enter quantity">
+                        <div *ngIf="size.get('quantity')?.invalid && size.get('quantity')?.touched" class="invalid-feedback">
+                          Quantity must be a positive number.
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-danger" (click)="removeSize(colorIndex, sizeIndex)">Remove Size</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-primary" (click)="addSize(colorIndex)">Add Size</button>
+              </div>
+              <button type="button" class="btn btn-danger" (click)="removeColor(colorIndex)">Remove Color</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <button type="button" class="btn btn-primary" (click)="addColor()">Add Color</button>
+      <button type="submit" class="btn btn-success" [disabled]="!productForm.valid">Create Product</button>
+    </form>
+  </div>
+  

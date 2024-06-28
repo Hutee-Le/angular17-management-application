@@ -48,6 +48,14 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/products', productId]);
   }
 
+  goToEditProduct(productId: string): void {
+    this.router.navigate(['/products/update', productId]);
+  }
+
+  goToCreateProduct(): void {
+    this.router.navigate(['/products/create']);
+  }
+
   calculateTotalQuantity(product: Product): number {
     let totalQuantity = 0;
     product.colors.forEach(color => {

@@ -4,6 +4,8 @@ import { AdminLayoutComponent } from './shared/layout/admin-layout/admin-layout.
 import { UsersComponent } from './admin/users/users.component';
 import { ProductListComponent } from './admin/products/product-list/product-list.component';
 import { ProductDetailComponent } from './admin/products/product-detail/product-detail.component';
+import { CreateProductComponent } from './admin/products/create-product/create-product.component';
+import { UpdateProductComponent } from './admin/products/update-product/update-product.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -14,6 +16,8 @@ export const routes: Routes = [
           { path: 'dashboard', component: DashboardComponent },
           { path: 'users', component: UsersComponent },
           { path: 'products', component: ProductListComponent },
+          { path: 'products/create', component: CreateProductComponent },
+          { path: 'products/update/:id', component: UpdateProductComponent },
           { path: 'products/:id', component: ProductDetailComponent },
       ]
   },

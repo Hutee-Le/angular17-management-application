@@ -8,18 +8,19 @@ const db = getFirestore(firebase);
 
 export const createProduct = async (req, res, next) => {
     const data = req.body;
+    console.log('Product Data:', req.body);
 
     try {
         const productRef = await addDoc(collection(db, 'products'), {
             name: data.name,
             description: data.description,
             gender: data.gender,
-            image: data.image,
+            image: data.image || '',
             price: data.price,
             category: data.category,
-            subcategory: data.subcategory,
+            subcategory: data.subcategory || '',
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
         });
 
         const colors = Array.isArray(data.colors) ? data.colors : [];
@@ -48,10 +49,10 @@ export const createProduct = async (req, res, next) => {
 
         await setDoc(productRef, { colors: colorRefs }, { merge: true });
 
-        res.status(201).send({ id: productRef.id });
+        res.status(201).json({ id: productRef.id });
     } catch (error) {
         console.error("Error creating product: ", error);
-        res.status(500).send(error.message);
+        res.status(500).json(error.message);
     }
 }
 
@@ -211,10 +212,10 @@ export const updateProduct = async (req, res, next) => {
             name: productData.name,
             description: productData.description,
             gender: productData.gender,
-            image: productData.image,
+            image: productData.image || '',
             price: productData.price,
             category: productData.category,
-            subcategory: productData.subcategory,
+            subcategory: productData.subcategory || '',
             updatedAt: new Date()
         });
 
@@ -260,10 +261,10 @@ export const updateProduct = async (req, res, next) => {
 
         await setDoc(productRef, { colors: colorRefs }, { merge: true });
 
-        res.status(200).send('Product updated successfully');
+        res.status(200).json({message: 'Product updated successfully'});
     } catch (error) {
         console.error("Error updating product: ", error);
-        res.status(500).send(error.message);
+        res.status(500).json(error.message);
     }
 }
 

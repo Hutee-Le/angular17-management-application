@@ -10,16 +10,17 @@ import productRoute from './src/routes/productRoute.js'
 const app = express();
 
 // Middleware setup
-app.use(urlencoded({ extended: false })); // parse URL-encoded data
-app.use(json()); // parse JSON data
+app.use(urlencoded({ extended: true }));
+app.use(json()); // Cho phép parse application/json
 
 // config CORS
 const corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }
 
-app.use(cors(corsOptions)); // enable CORS
+app.use(cors(corsOptions));
 
 // define get route
 app.get("/", (req, res) => {
