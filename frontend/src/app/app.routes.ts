@@ -6,6 +6,7 @@ import { ProductListComponent } from './admin/products/product-list/product-list
 import { ProductDetailComponent } from './admin/products/product-detail/product-detail.component';
 import { CreateProductComponent } from './admin/products/create-product/create-product.component';
 import { UpdateProductComponent } from './admin/products/update-product/update-product.component';
+import { CreateUserComponent } from './admin/users/create-user/create-user.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -15,6 +16,7 @@ export const routes: Routes = [
       children: [
           { path: 'dashboard', component: DashboardComponent },
           { path: 'users', component: UsersComponent },
+          { path: 'register', component: CreateUserComponent },
           { path: 'products', component: ProductListComponent },
           { path: 'products/create', component: CreateProductComponent },
           { path: 'products/update/:id', component: UpdateProductComponent },
