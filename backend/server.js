@@ -5,6 +5,7 @@ import { urlencoded, json } from 'body-parser';
 
 import config from './config/config.js';
 import productRoute from './src/routes/productRoute.js'
+import userRoute from './src/routes/userRoute.js'
 
 // create express app
 const app = express();
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 
 //routes
 app.use('/api/products', productRoute);
+app.use('/api/users', userRoute);
 
 // start server
 const PORT = config.port || 3000;

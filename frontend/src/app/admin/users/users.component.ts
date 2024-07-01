@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core';
 import { DocumentData, Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from '../../core/models/user.interface';
+import { Router } from '@angular/router';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-users',
@@ -13,12 +15,27 @@ import { User } from '../../core/models/user.interface';
 })
 export class UsersComponent {
   firestore: Firestore = inject(Firestore)
-  items: Observable<any[]>;
   users: User[] = [];
 
-  constructor() {
-    const itemCollection  = collection(this.firestore, 'users');
-    this.items = collectionData(itemCollection);
-    this.items.subscribe(data=>{this.users = data}) 
+  constructor(private router: Router, private userService: UserService) {
+  }
+
+  ngOnInit(): void {
+    this.loadUsers(); 
+  }
+
+  loadUsers() {
+    this.userService.getUsers().subscribe(
+      data => {
+        this.users = data; 
+      },
+      error => {
+        console.error('Error loading users:', error); 
+      }
+    );
+  }
+
+  goToCreateUser(): void {
+    this.router.navigate(['/admin/users/create'])
   }
 }

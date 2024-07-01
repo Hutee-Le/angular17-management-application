@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-create-user',
@@ -14,33 +15,50 @@ import { CommonModule } from '@angular/common';
 export class CreateUserComponent {
   userForm: FormGroup;
 
-  constructor(private authService: AuthService, private router: Router, private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private authService: AuthService, private userService: UserService, private router: Router) {
     this.userForm = this.fb.group({
+      name: ['', Validators.required],
+      mobNumber: ['', Validators.required],
+      age: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password');
-    const confirmPassword = form.get('confirmPassword');
-    return password && confirmPassword && password.value === confirmPassword.value ? null : { mismatch: true };
-  }
-
-  createUser() {
-    const email = this.userForm.get('email')!.value;
-    const password = this.userForm.get('password')!.value;
-
-    this.authService.createAccount(email, password)
-      .then(res => {
-        console.log('Account created successfully:', res);
-        alert('Your account has been created successfully!');
-        this.router.navigate(['/dashboard']);
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+      gender: ['', Validators.required],
+      uploadPhoto: [''],
+      role: ['', Validators.required],
+      activated: [false],
+      address: this.fb.group({
+        street: [''],
+        city: [''],
+        state: [''],
       })
-      .catch(error => {
-        console.error('Error creating account:', error);
-        alert(error.message);
-      });
+    });
+  }
+
+  ngOnInit(): void {
+  }
+
+  onSubmit(): void {
+    if (this.userForm.valid) {
+      const { email, password } = this.userForm.value;
+
+      // Tạo tài khoản người dùng trong Firebase Authentication
+      this.authService.createAccount(email, password)
+        .then(() => {
+          this.userService.createUser(this.userForm.value)
+            .subscribe(
+              (response) => {
+                console.log('User created successfully', response);
+                this.router.navigate(['/admin/users']);
+              },
+              (error) => {
+                console.error('Error creating user', error);
+              }
+            );
+        })
+        .catch((error) => {
+          console.error('Error creating account:', error);
+        });
+    }
   }
 }

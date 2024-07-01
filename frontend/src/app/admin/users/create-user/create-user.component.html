@@ -1,39 +1,58 @@
-<p>
-   create-user works!
- </p>
- <form [formGroup]="userForm" (ngSubmit)="createUser()">
-   <div class="form-group">
-     <label for="email">Email</label>
-     <input type="text" class="form-control" formControlName="email" id="email" placeholder="Enter Email">
-     <div *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched" class="text-danger">
-       Email is required
-     </div>
-     <div *ngIf="userForm.get('email')?.errors?.['email'] && userForm.get('email')?.touched" class="text-danger">
-       Invalid email format
-     </div>
-   </div>
-   <div class="form-group">
-     <label for="password">Password</label>
-     <input type="password" class="form-control" formControlName="password" id="password" placeholder="Enter password">
-     <div *ngIf="userForm.get('password')?.errors?.['required'] && userForm.get('password')?.touched" class="text-danger">
-       Password is required
-     </div>
-     <div *ngIf="userForm.get('password')?.errors?.['minlength'] && userForm.get('password')?.touched" class="text-danger">
-       Minimum length of password is 6 characters
-     </div>
-   </div>
-   <div class="form-group">
-     <label for="confirmPassword">Confirm Password</label>
-     <input type="password" class="form-control" formControlName="confirmPassword" id="confirmPassword" placeholder="Enter confirm password">
-     <div *ngIf="userForm.get('confirmPassword')?.errors?.['required'] && userForm.get('confirmPassword')?.touched" class="text-danger">
-       Confirm password is required
-     </div>
-     <div *ngIf="userForm.errors?.['mismatch'] && userForm.get('confirmPassword')?.touched" class="text-danger">
-       Passwords do not match
-     </div>
-   </div>
-   <div class="form-group">     
-     <input type="submit" [disabled]="!userForm.valid" class="btn btn-primary" value="Create">
-   </div>
- </form>
- 
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter name">
+  </div>
+
+  <div class="form-group">
+    <label for="mobNumber">Mobile Number</label>
+    <input type="text" class="form-control" id="mobNumber" formControlName="mobNumber" placeholder="Enter mobile number">
+  </div>
+
+  <div class="form-group">
+    <label for="age">Age</label>
+    <input type="number" class="form-control" id="age" formControlName="age" placeholder="Enter age">
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" id="email" formControlName="email" placeholder="Enter email">
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" id="password" formControlName="password" placeholder="Enter password">
+  </div>
+
+  <div class="form-group">
+    <label for="gender">Gender</label>
+    <select class="form-control" id="gender" formControlName="gender">
+      <option value="">Select gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="role">Role</label>
+    <select class="form-control" id="role" formControlName="role">
+      <option value="">Select role</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+  </div>
+
+  <div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="activated" formControlName="activated">
+    <label class="form-check-label" for="activated">Activated</label>
+  </div>
+
+  <div class="mb-3">
+    <label>Address</label>
+    <input type="text" class="form-control" formControlName="address.street" placeholder="Street">
+    <input type="text" class="form-control" formControlName="address.city" placeholder="City">
+    <input type="text" class="form-control" formControlName="address.state" placeholder="State">
+  </div>
+
+  <button type="submit" class="btn btn-primary" [disabled]="!userForm.valid">Submit</button>
+</form>

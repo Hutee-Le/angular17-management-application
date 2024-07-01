@@ -7,20 +7,25 @@ import { ProductDetailComponent } from './admin/products/product-detail/product-
 import { CreateProductComponent } from './admin/products/create-product/create-product.component';
 import { UpdateProductComponent } from './admin/products/update-product/update-product.component';
 import { CreateUserComponent } from './admin/users/create-user/create-user.component';
+import { LoginComponent } from './admin/users/login/login.component';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {
-      path: '',
+      path: 'admin',
       component: AdminLayoutComponent,
+      canActivate:[authGuard],
       children: [
-          { path: 'dashboard', component: DashboardComponent },
+          { path: '', component: DashboardComponent },
           { path: 'users', component: UsersComponent },
-          { path: 'register', component: CreateUserComponent },
+          { path: 'users/create', component: CreateUserComponent },
           { path: 'products', component: ProductListComponent },
           { path: 'products/create', component: CreateProductComponent },
           { path: 'products/update/:id', component: UpdateProductComponent },
           { path: 'products/:id', component: ProductDetailComponent },
       ]
   },
+  { path: 'login', component: LoginComponent},
+  {path:'**', redirectTo: "login", pathMatch: "full"}
+
 ];

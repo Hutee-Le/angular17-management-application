@@ -45,15 +45,15 @@ export class ProductListComponent implements OnInit {
   }
 
   goToProductDetail(productId: string): void {
-    this.router.navigate(['/products', productId]);
+    this.router.navigate(['/admin/products', productId]);
   }
 
   goToEditProduct(productId: string): void {
-    this.router.navigate(['/products/update', productId]);
+    this.router.navigate(['/admin/products/update', productId]);
   }
 
   goToCreateProduct(): void {
-    this.router.navigate(['/products/create']);
+    this.router.navigate(['/admin/products/create']);
   }
 
   calculateTotalQuantity(product: Product): number {

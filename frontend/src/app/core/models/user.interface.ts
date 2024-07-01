@@ -2,11 +2,10 @@ export interface User {
     id?: string
     name: string;
     mobNumber: string;
-    age?: number;
-    dob?: string;
+    age: number;
     email: string;
     password: string;
-    gender?: string;
+    gender: string;
     uploadPhoto?: string;
     role: string;
     activated: boolean;
@@ -18,5 +17,4 @@ export interface Address {
     street: string;
     city: string;
     state?: string; 
-    zipCode: string;
   }
